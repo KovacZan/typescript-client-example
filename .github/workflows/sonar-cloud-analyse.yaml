@@ -1,0 +1,42 @@
+# eventi nad katerimi se proži ta delovni tok
+on:
+  push:
+      branches:
+        - master
+  pull_request:
+      types: [ opened, synchronize, reopened ]
+
+name: Sonar cloud analyse
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+      # na kateri različici noda se bo izvedlo
+        node-version: [ 12.x ]
+    steps:
+      - uses: actions/checkout@v2 # kopira naš repozitorji
+        with:
+          fetch-depth: 0
+      # pripravi node z določeno verzijo
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      # inštalira potrebne dependencije
+      - name: Install
+        run: yarn install
+      # builda projekt
+      - name: Build
+        run: yarn build
+      # testira projekt in generira .coverage mapo in test-report.xml
+      - name: Test
+        run: yarn test
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          # token, katerega GitHub samostojno generira
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # token, katerega smo dodali mi sami
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
