@@ -24,7 +24,7 @@
 	"bail": false,
 	"collectCoverage": true,
 	"coverageDirectory": "<rootDir>/.coverage",
-	testResultsProcessor: "jest-sonar-reporter",
+	"testResultsProcessor": "jest-sonar-reporter",
 	"coverageReporters": [
 	  "lcov",
 	  "json",
